@@ -32,7 +32,7 @@ public class SanPhamRepository {
         Transaction transaction = this.hSession.getTransaction();
         try {
             transaction.begin();
-            this.hSession.merge(sp);
+            this.hSession.delete(sp);
             transaction.commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,7 +44,7 @@ public class SanPhamRepository {
         Transaction transaction = this.hSession.getTransaction();
         try {
             transaction.begin();
-            this.hSession.delete(sp);
+            this.hSession.merge(sp);
             transaction.commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,7 +62,11 @@ public class SanPhamRepository {
         String hql = "select obj from SanPham obj where obj.ma =: ma";
         TypedQuery<SanPham> query = this.hSession.createQuery(hql, SanPham.class);
         query.setParameter("ma", ma);
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public SanPham findByMa(int id) {

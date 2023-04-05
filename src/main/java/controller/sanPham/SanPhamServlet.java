@@ -1,16 +1,23 @@
 package controller.sanPham;
 
+import entity.MauSac;
 import entity.SanPham;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import repositories.SanPhamRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 @WebServlet({
         "/san-pham/create",
@@ -62,11 +69,37 @@ public class SanPhamServlet extends HttpServlet {
         try {
             SanPham sp = new SanPham();
             BeanUtils.populate(sp, request.getParameterMap());
-            this.sanPhamRepository.insert(sp);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<SanPham>> constraints = validator.validate(sp);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                for (ConstraintViolation<SanPham> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else {
+                        errTen = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("sp", sp);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                response.sendRedirect("/san-pham/create");
+            } else {
+                this.sanPhamRepository.insert(sp);
+                session.removeAttribute("sp");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                response.sendRedirect("/san-pham/index");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        response.sendRedirect("/san-pham/index");
     }
 
     public void index(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -87,11 +120,38 @@ public class SanPhamServlet extends HttpServlet {
         try {
             SanPham sp = this.sanPhamRepository.findByMa(request.getParameter("ma"));
             BeanUtils.populate(sp, request.getParameterMap());
-            this.sanPhamRepository.update(sp);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<SanPham>> constraints = validator.validate(sp);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                for (ConstraintViolation<SanPham> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else {
+                        errTen = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("sp", sp);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                response.sendRedirect("/san-pham/edit");
+            } else {
+                this.sanPhamRepository.update(sp);
+                session.removeAttribute("sp");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                response.sendRedirect("/san-pham/index");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            response.sendRedirect("/san-pham/index");
         }
-        response.sendRedirect("/san-pham/index");
     }
 
     private void edit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
