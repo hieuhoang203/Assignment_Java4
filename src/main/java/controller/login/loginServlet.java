@@ -7,6 +7,7 @@ import jakarta.servlet.annotation.*;
 import repositories.NhanVienRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 @WebServlet({
         "/login"
@@ -29,6 +30,7 @@ public class loginServlet extends HttpServlet {
         String mat_khau = request.getParameter("mat_khau");
         NhanVien nv = this.nvRepo.login(ma, mat_khau);
         HttpSession session = request.getSession();
+        ArrayList<String> errMess;
         if (nv == null) {
             String errorMessage = "Sai tài khoản hoặc mật khẩu";
             session.setAttribute("errorMessage", errorMessage);

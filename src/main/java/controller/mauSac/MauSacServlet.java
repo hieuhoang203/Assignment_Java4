@@ -6,10 +6,17 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import repositories.MauSacRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Set;
 
 @WebServlet({
         "/mau-sac/create",
@@ -71,11 +78,37 @@ public class MauSacServlet extends HttpServlet {
         try {
             MauSac ms = new MauSac();
             BeanUtils.populate(ms, request.getParameterMap());
-            this.mauSacRepository.insert(ms);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<MauSac>> constraints = validator.validate(ms);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                for (ConstraintViolation<MauSac> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else {
+                        errTen = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("ms", ms);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                response.sendRedirect("/mau-sac/create");
+            } else {
+                this.mauSacRepository.insert(ms);
+                session.removeAttribute("ms");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                response.sendRedirect("/mau-sac/index");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        response.sendRedirect("/mau-sac/index");
     }
 
     public void index(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

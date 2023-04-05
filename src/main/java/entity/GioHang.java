@@ -64,7 +64,6 @@ public class GioHang implements Serializable {
     }
 
     public GioHang(KhachHang id_khachHang, NhanVien id_nhanVien, String ma, Date ngay_tao, Date ngay_thanh_toan, String ten_nguoi_nhan, String dia_chi, String sdt, int tinh_trang) {
-        this.id = id;
         this.id_khachHang = id_khachHang;
         this.id_nhanVien = id_nhanVien;
         this.ma = ma;
@@ -77,7 +76,6 @@ public class GioHang implements Serializable {
     }
 
     public GioHang(KhachHang id_khachHang, NhanVien id_nhanVien, String ma, Date ngay_tao, Date ngay_thanh_toan, String ten_nguoi_nhan, String dia_chi, String sdt, int tinh_trang, List<GioHangChiTiet> gioHangChiTiet) {
-        this.id = id;
         this.id_khachHang = id_khachHang;
         this.id_nhanVien = id_nhanVien;
         this.ma = ma;
