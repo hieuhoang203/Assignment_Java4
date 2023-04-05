@@ -67,11 +67,37 @@ public class MauSacServlet extends HttpServlet {
         try {
             MauSac ms = this.mauSacRepository.findByMa(request.getParameter("ma"));
             BeanUtils.populate(ms, request.getParameterMap());
-            this.mauSacRepository.update(ms);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<MauSac>> constraints = validator.validate(ms);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                for (ConstraintViolation<MauSac> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else {
+                        errTen = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("ms", ms);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                response.sendRedirect("/mau-sac/edit");
+            } else {
+                this.mauSacRepository.update(ms);
+                session.removeAttribute("ms");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                response.sendRedirect("/mau-sac/index");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        response.sendRedirect("/mau-sac/index");
     }
 
     public void store(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

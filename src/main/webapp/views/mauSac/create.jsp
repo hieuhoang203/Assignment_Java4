@@ -19,7 +19,7 @@
                     <input type="text" class="form-control" name="ten" id="floatingTen" value="${ms.ten}">
                     <label for="floatingTen">Tên</label>
                 </div>
-                <c:if test="${f:length(errTen) != ''}">
+                <c:if test="${f:length(errTen) != 0}">
                     <div class="alert alert-danger">${errTen}</div>
                 </c:if>
                 <div class="mb-3 text-center">

@@ -15,7 +15,7 @@ public class MauSacRepository {
         this.hSession = HibernateConfig.getFACTORY().openSession();
     }
 
-    public void insert(MauSac ms){
+    public void insert(MauSac ms) {
         Transaction transaction = this.hSession.getTransaction();
         try {
             transaction.begin();
@@ -57,14 +57,18 @@ public class MauSacRepository {
         return query.getResultList();
     }
 
-    public MauSac findByMa(String ma){
+    public MauSac findByMa(String ma) {
         String hql = "select obj from MauSac obj where obj.ma =:ma";
         TypedQuery<MauSac> query = this.hSession.createQuery(hql, MauSac.class);
         query.setParameter("ma", ma);
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
-    public MauSac findById(int id){
+    public MauSac findById(int id) {
         return this.hSession.find(MauSac.class, id);
     }
 }
