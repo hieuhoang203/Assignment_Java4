@@ -1,6 +1,7 @@
 package entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
@@ -26,9 +27,11 @@ public class ChucVu implements Serializable {
     private UUID id;
 
     @Column(name = "ma")
+    @NotEmpty(message = "Mã không được để trống!")
     private String ma;
 
     @Column(name = "ten")
+    @NotEmpty(message = "Tên không được để trống!")
     private String ten;
 
     @OneToMany(mappedBy = "id_chucVu", fetch = FetchType.LAZY)

@@ -1,14 +1,21 @@
 package controller.nhaSanXuat;
 
+import entity.ChucVu;
 import entity.NhaSanXuat;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import repositories.NhaSanXuatRepository;
 import java.io.IOException;
+import java.util.Set;
 
 @WebServlet({
         "/nha-san-xuat/index",
@@ -59,22 +66,76 @@ public class NhaSanXuatServlet extends HttpServlet {
         try {
             NhaSanXuat nsx = this.nhaSanXuatRepo.findByMa(request.getParameter("ma"));
             BeanUtils.populate(nsx, request.getParameterMap());
-            this.nhaSanXuatRepo.update(nsx);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<NhaSanXuat>> constraints = validator.validate(nsx);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                for (ConstraintViolation<NhaSanXuat> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else {
+                        errTen = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("nsx", nsx);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                response.sendRedirect("/nha-san-xuat/edit");
+            } else {
+                this.nhaSanXuatRepo.update(nsx);
+                session.removeAttribute("nsx");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                response.sendRedirect("/nha-san-xuat/index");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            response.sendRedirect("/nha-san-xuat/index");
         }
-        response.sendRedirect("/nha-san-xuat/index");
     }
 
     public void store(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             NhaSanXuat nsx = new NhaSanXuat();
             BeanUtils.populate(nsx, request.getParameterMap());
-            this.nhaSanXuatRepo.insert(nsx);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<NhaSanXuat>> constraints = validator.validate(nsx);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                for (ConstraintViolation<NhaSanXuat> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else {
+                        errTen = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("nsx", nsx);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                response.sendRedirect("/nha-san-xuat/create");
+            } else {
+                this.nhaSanXuatRepo.insert(nsx);
+                session.removeAttribute("nsx");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                response.sendRedirect("/nha-san-xuat/index");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            response.sendRedirect("/nha-san-xuat/index");
         }
-        response.sendRedirect("/nha-san-xuat/index");
     }
 
     public void index(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -56,7 +56,11 @@ public class DongSanPhamRepository {
         String hql = "select obj from DongSp obj where obj.ma =: ma";
         TypedQuery<DongSp> query = this.hSession.createQuery(hql, DongSp.class);
         query.setParameter("ma", ma);
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public List<DongSp> findAll() {

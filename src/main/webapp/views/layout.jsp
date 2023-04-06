@@ -49,7 +49,7 @@
             </li>
         </ul>
     </header>
-    <div class="row mt-5" style="height: 600px">
+    <div class="row mt-5" style="height: auto">
         <jsp:include page="${ view }"/>
     </div>
     <footer class="row bg-dark text-white p-auto">

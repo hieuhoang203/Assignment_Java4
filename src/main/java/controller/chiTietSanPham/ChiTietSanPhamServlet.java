@@ -10,10 +10,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import repositories.*;
 
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.UUID;
 
 @WebServlet({
@@ -42,11 +48,11 @@ public class ChiTietSanPhamServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String uri = request.getRequestURI();
-        if (uri.contains("create")){
+        if (uri.contains("create")) {
             this.create(request, response);
-        } else if (uri.contains("delete")){
+        } else if (uri.contains("delete")) {
             this.delete(request, response);
-        } else if (uri.contains("edit")){
+        } else if (uri.contains("edit")) {
             this.edit(request, response);
         } else {
             this.index(request, response);
@@ -91,9 +97,9 @@ public class ChiTietSanPhamServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String uri = request.getRequestURI();
-        if (uri.contains("store")){
+        if (uri.contains("store")) {
             this.store(request, response);
-        } else if (uri.contains("update")){
+        } else if (uri.contains("update")) {
             this.update(request, response);
         } else {
             this.index(request, response);
@@ -107,11 +113,31 @@ public class ChiTietSanPhamServlet extends HttpServlet {
         NhaSanXuat id_nhaSanXuat = this.nhaSanXuatRepository.findByMa(request.getParameter("id_nhaSanXuat"));
         MauSac id_mauSac = this.mauSacRepository.findByMa(request.getParameter("id_mauSac"));
         DongSp id_dongSp = this.dongSanPhamRepository.findByMa(request.getParameter("id_dongSp"));
-        int nam_bh = Integer.parseInt(request.getParameter("nam_bh"));
+        int nam_bh;
+        try {
+            nam_bh = Integer.parseInt(request.getParameter("nam_bh"));
+        } catch (NumberFormatException e) {
+            nam_bh = 2020;
+        }
         String mo_ta = request.getParameter("mo_ta");
-        int so_luong = Integer.parseInt(request.getParameter("so_luong"));
-        double gia_nhap = Double.parseDouble(request.getParameter("gia_nhap"));
-        double gia_ban = Double.parseDouble(request.getParameter("gia_ban"));
+        int so_luong;
+        try {
+            so_luong = Integer.parseInt(request.getParameter("so_luong"));
+        } catch (NumberFormatException e) {
+            so_luong = 1;
+        }
+        double gia_nhap;
+        try {
+            gia_nhap = Double.parseDouble(request.getParameter("gia_nhap"));
+        } catch (NumberFormatException e) {
+            gia_nhap = 1;
+        }
+        double gia_ban;
+        try {
+            gia_ban = Double.parseDouble(request.getParameter("gia_ban"));
+        } catch (NumberFormatException e) {
+            gia_ban = 1;
+        }
 
         ctsp.setId_sanPham(id_sanPham);
         ctsp.setId_nhaSanXuat(id_nhaSanXuat);
@@ -132,12 +158,31 @@ public class ChiTietSanPhamServlet extends HttpServlet {
         NhaSanXuat id_nhaSanXuat = this.nhaSanXuatRepository.findByMa(request.getParameter("id_nhaSanXuat"));
         MauSac id_mauSac = this.mauSacRepository.findByMa(request.getParameter("id_mauSac"));
         DongSp id_dongSp = this.dongSanPhamRepository.findByMa(request.getParameter("id_dongSp"));
-        int nam_bh = Integer.parseInt(request.getParameter("nam_bh"));
+        int nam_bh;
+        try {
+            nam_bh = Integer.parseInt(request.getParameter("nam_bh"));
+        } catch (NumberFormatException e) {
+            nam_bh = 2020;
+        }
         String mo_ta = request.getParameter("mo_ta");
-        int so_luong = Integer.parseInt(request.getParameter("so_luong"));
-        double gia_nhap = Double.parseDouble(request.getParameter("gia_nhap"));
-        double gia_ban = Double.parseDouble(request.getParameter("gia_ban"));
-
+        int so_luong;
+        try {
+            so_luong = Integer.parseInt(request.getParameter("so_luong"));
+        } catch (NumberFormatException e) {
+            so_luong = 1;
+        }
+        double gia_nhap;
+        try {
+            gia_nhap = Double.parseDouble(request.getParameter("gia_nhap"));
+        } catch (NumberFormatException e) {
+            gia_nhap = 1;
+        }
+        double gia_ban;
+        try {
+            gia_ban = Double.parseDouble(request.getParameter("gia_ban"));
+        } catch (NumberFormatException e) {
+            gia_ban = 1;
+        }
         ChiTietSanPham ctsp = new ChiTietSanPham(id_sanPham, id_nhaSanXuat, id_mauSac, id_dongSp, nam_bh, mo_ta, so_luong, gia_nhap, gia_ban);
 
         this.chiTietSanPhamRepository.insert(ctsp);

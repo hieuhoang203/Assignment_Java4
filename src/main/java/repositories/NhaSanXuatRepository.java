@@ -62,7 +62,11 @@ public class NhaSanXuatRepository {
         String hql = "select obj from NhaSanXuat obj where obj.ma =: ma";
         TypedQuery<NhaSanXuat> query = this.hSession.createQuery(hql, NhaSanXuat.class);
         query.setParameter("ma", ma);
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public NhaSanXuat findById(int id){

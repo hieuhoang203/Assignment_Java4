@@ -63,7 +63,11 @@ public class ChucVuRepository {
         String hql = "select obj from ChucVu obj where obj.ma =: ma";
         TypedQuery<ChucVu> query = this.hSession.createQuery(hql, ChucVu.class);
         query.setParameter("ma", ma);
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public ChucVu findById(UUID id){

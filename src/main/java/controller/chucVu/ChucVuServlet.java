@@ -1,15 +1,22 @@
 package controller.chucVu;
 
 import entity.ChucVu;
+import entity.MauSac;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import repositories.ChucVuRepository;
 
 import java.io.IOException;
+import java.util.Set;
 
 @WebServlet({
         "/chuc-vu/index",
@@ -49,11 +56,38 @@ public class ChucVuServlet extends HttpServlet {
         try {
             ChucVu cv = new ChucVu();
             BeanUtils.populate(cv, request.getParameterMap());
-            this.chucVuRepository.insert(cv);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<ChucVu>> constraints = validator.validate(cv);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                for (ConstraintViolation<ChucVu> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else {
+                        errTen = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("cv", cv);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                response.sendRedirect("/chuc-vu/create");
+            } else {
+                this.chucVuRepository.insert(cv);
+                session.removeAttribute("cv");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                response.sendRedirect("/chuc-vu/index");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            response.sendRedirect("/chuc-vu/index");
         }
-        response.sendRedirect("/chuc-vu/index");
     }
 
     @Override
@@ -72,11 +106,38 @@ public class ChucVuServlet extends HttpServlet {
         try {
             ChucVu cv = this.chucVuRepository.findByMa(request.getParameter("ma"));
             BeanUtils.populate(cv, request.getParameterMap());
-            this.chucVuRepository.update(cv);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<ChucVu>> constraints = validator.validate(cv);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                for (ConstraintViolation<ChucVu> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else {
+                        errTen = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("cv", cv);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                response.sendRedirect("/chuc-vu/edit");
+            } else {
+                this.chucVuRepository.update(cv);
+                session.removeAttribute("cv");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                response.sendRedirect("/chuc-vu/index");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            response.sendRedirect("/chuc-vu/index");
         }
-        response.sendRedirect("/chuc-vu/index");
     }
 
     public void index(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

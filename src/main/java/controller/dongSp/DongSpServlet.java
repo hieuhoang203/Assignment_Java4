@@ -1,16 +1,22 @@
 package controller.dongSp;
 
 import entity.DongSp;
+import entity.SanPham;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import repositories.DongSanPhamRepository;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Set;
 
 @WebServlet({
         "/dong-sp/create",
@@ -61,11 +67,38 @@ public class DongSpServlet extends HttpServlet {
         try {
             DongSp dongSp = new DongSp();
             BeanUtils.populate(dongSp, request.getParameterMap());
-            this.dongSanPhamRepository.insert(dongSp);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<DongSp>> constraints = validator.validate(dongSp);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                for (ConstraintViolation<DongSp> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else {
+                        errTen = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("dongSp", dongSp);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                response.sendRedirect("/dong-sp/create");
+            } else {
+                this.dongSanPhamRepository.insert(dongSp);
+                session.removeAttribute("dongSp");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                response.sendRedirect("/dong-sp/index");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            response.sendRedirect("/dong-sp/index");
         }
-        response.sendRedirect("/dong-sp/index");
     }
 
     public void index(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -95,10 +128,37 @@ public class DongSpServlet extends HttpServlet {
         try {
             DongSp dongSp = this.dongSanPhamRepository.findByMa(request.getParameter("ma"));
             BeanUtils.populate(dongSp, request.getParameterMap());
-            this.dongSanPhamRepository.update(dongSp);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<DongSp>> constraints = validator.validate(dongSp);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                for (ConstraintViolation<DongSp> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else {
+                        errTen = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("dongSp", dongSp);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                response.sendRedirect("/dong-sp/edit");
+            } else {
+                this.dongSanPhamRepository.update(dongSp);
+                session.removeAttribute("dongSp");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                response.sendRedirect("/dong-sp/index");
+            }
         } catch (Exception e){
             e.printStackTrace();
+            response.sendRedirect("/dong-sp/index");
         }
-        response.sendRedirect("/dong-sp/index");
     }
 }

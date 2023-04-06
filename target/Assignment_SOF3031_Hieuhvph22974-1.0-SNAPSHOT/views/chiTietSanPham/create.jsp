@@ -24,13 +24,16 @@
                 <label class="form-label">Dòng sản phẩm</label>
             </div>
             <div class="form-floating mb-3">
-                <textarea class="form-control" name="mo_ta" id="floatingTextarea"></textarea>
-                <label for="floatingTextarea">Mô tả</label>
+                <textarea class="form-control" name="mo_ta" id="floatingTextarea1"></textarea>
+                <label for="floatingTextarea1">Mô tả</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="number" class="form-control" name="gia_nhap" id="floatingGiaNhap" min="1">
-                <label for="floatingGiaNhap">Giá nhập</label>
+                <input type="number" class="form-control" name="gia_nhap" id="floatingGiaNhap1" min="1">
+                <label for="floatingGiaNhap1">Giá nhập</label>
             </div>
+            <c:if test="${f:length(errGianhap) != 0}">
+                <div class="alert alert-danger">${errGianhap}</div>
+            </c:if>
         </div>
         <div class="col-md-3">
             <div class="form-floating mb-3">
@@ -50,16 +53,16 @@
                 <label class="form-label">Màu sắc</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="number" class="form-control" name="nam_bh" id="floatingBh" min="1000">
-                <label for="floatingBh">Năm bảo hành</label>
+                <input type="number" class="form-control" name="nam_bh" id="floatingBh1" min="1000">
+                <label for="floatingBh1">Năm bảo hành</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="number" class="form-control" name="so_luong" id="floatingSoluong" min="1">
-                <label for="floatingSoluong">Số lượng</label>
+                <input type="number" class="form-control" name="so_luong" id="floatingSoluong1" min="1">
+                <label for="floatingSoluong1">Số lượng</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="number" class="form-control" name="gia_ban" id="floatingGiaBan" min="1">
-                <label for="floatingGiaNhap">Giá bán</label>
+                <input type="number" class="form-control" name="gia_ban" id="floatingGiaBan1" min="1">
+                <label for="floatingGiaNhap1">Giá bán</label>
             </div>
         </div>
         <div class="col-md-3"></div>

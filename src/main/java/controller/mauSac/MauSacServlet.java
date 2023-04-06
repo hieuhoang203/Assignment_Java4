@@ -97,6 +97,7 @@ public class MauSacServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            response.sendRedirect("/mau-sac/index");
         }
     }
 
@@ -134,6 +135,7 @@ public class MauSacServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            response.sendRedirect("/mau-sac/index");
         }
     }
 

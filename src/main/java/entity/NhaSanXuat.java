@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -34,9 +35,11 @@ public class NhaSanXuat implements Serializable {
     private UUID id;
 
     @Column(name = "ma")
+    @NotEmpty(message = "Mã không được để trống!")
     private String ma;
 
     @Column(name = "ten")
+    @NotEmpty(message = "Tên không được để trống!")
     private String ten;
 
     @OneToMany(mappedBy = "id_nhaSanXuat", fetch = FetchType.LAZY)

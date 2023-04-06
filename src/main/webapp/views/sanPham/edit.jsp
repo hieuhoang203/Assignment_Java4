@@ -12,9 +12,6 @@
                     <input type="text" class="form-control" name="ma" value="${sp.ma}" id="floatingMa" disabled>
                     <label for="floatingMa">Mã</label>
                 </div>
-                <c:if test="${f:length(errMa) != 0}">
-                    <div class="alert alert-danger">${errMa}</div>
-                </c:if>
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" name="ten" value="${sp.ten}" id="floatingTen">
                     <label for="floatingTen">Tên</label>

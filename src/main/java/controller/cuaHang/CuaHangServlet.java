@@ -1,15 +1,22 @@
 package controller.cuaHang;
 
 import entity.CuaHang;
+import entity.NhaSanXuat;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import repositories.CuaHangRepository;
 
 import java.io.IOException;
+import java.util.Set;
 
 @WebServlet({
         "/cua-hang/index",
@@ -60,22 +67,87 @@ public class CuaHangServlet extends HttpServlet {
         try {
             CuaHang ch = this.cuaHangRepository.findByMa(request.getParameter("ma"));
             BeanUtils.populate(ch, request.getParameterMap());
-            this.cuaHangRepository.update(ch);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<CuaHang>> constraints = validator.validate(ch);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                String errDiachi = "";
+                for (ConstraintViolation<CuaHang> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else if (constraintViolation.getPropertyPath().toString().equals("ten")){
+                        errTen = constraintViolation.getMessage();
+                    } else {
+                        errDiachi = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("ch", ch);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                session.setAttribute("errDiachi", errDiachi);
+                response.sendRedirect("/cua-hang/edit");
+            } else {
+                this.cuaHangRepository.update(ch);
+                session.removeAttribute("ch");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                session.removeAttribute("errDiachi");
+                response.sendRedirect("/cua-hang/index");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            response.sendRedirect("/cua-hang/index");
         }
-        response.sendRedirect("/cua-hang/index");
     }
 
     public void store(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             CuaHang ch = new CuaHang();
             BeanUtils.populate(ch, request.getParameterMap());
-            this.cuaHangRepository.insert(ch);
+            HttpSession session = request.getSession();
+
+            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+            Validator validator = validatorFactory.getValidator();
+            Set<ConstraintViolation<CuaHang>> constraints = validator.validate(ch);
+
+            if (!constraints.isEmpty()){
+                String errMa = "";
+                String errTen = "";
+                String errDiachi = "";
+                for (ConstraintViolation<CuaHang> constraintViolation: constraints) {
+                    if (constraintViolation.getPropertyPath().toString().equals("ma")){
+                        errMa = constraintViolation.getMessage();
+                    } else if (constraintViolation.getPropertyPath().toString().equals("ten")){
+                        errTen = constraintViolation.getMessage();
+                    } else {
+                        errDiachi = constraintViolation.getMessage();
+                    }
+                }
+
+                session.setAttribute("ch", ch);
+                session.setAttribute("errMa", errMa);
+                session.setAttribute("errTen", errTen);
+                session.setAttribute("errDiachi", errDiachi);
+                response.sendRedirect("/cua-hang/create");
+            } else {
+                this.cuaHangRepository.insert(ch);
+                session.removeAttribute("ch");
+                session.removeAttribute("errMa");
+                session.removeAttribute("errTen");
+                session.removeAttribute("errDiachi");
+                response.sendRedirect("/cua-hang/index");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            response.sendRedirect("/cua-hang/index");
         }
-        response.sendRedirect("/cua-hang/index");
+
     }
 
     public void index(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

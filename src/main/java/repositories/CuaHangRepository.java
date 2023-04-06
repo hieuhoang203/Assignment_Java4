@@ -63,7 +63,11 @@ public class CuaHangRepository {
         String hql = "select obj from CuaHang obj where obj.ma =: ma";
         TypedQuery<CuaHang> query = this.hSession.createQuery(hql, CuaHang.class);
         query.setParameter("ma", ma);
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public CuaHang findById(UUID id) {

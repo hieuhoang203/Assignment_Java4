@@ -1,6 +1,8 @@
 package entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
@@ -42,19 +44,23 @@ public class ChiTietSanPham implements Serializable {
     private DongSp id_dongSp;
 
     @Column(name = "nam_bh")
-    private int nam_bh;
+    @Min(value = 2020, message = "Năm bảo hành không hợp lệ!")
+    private Integer nam_bh;
 
     @Column(name = "mo_ta")
     private String mo_ta;
 
     @Column(name = "so_luong_ton")
-    private int so_luong;
+    @Min(value = 1, message = "Số lượng không hợp lệ!")
+    private Integer so_luong;
 
     @Column(name = "gia_nhap")
-    private double gia_nhap;
+    @Min(value = 1, message = "Giá nhập không hợp lệ!")
+    private Double gia_nhap;
 
     @Column(name = "gia_ban")
-    private double gia_ban;
+    @Min(value = 1, message = "Giá bán không hợp lệ!")
+    private Double gia_ban;
 
     @OneToMany(mappedBy = "id_chiTietSp", fetch = FetchType.LAZY)
     private List<HoaDonChiTiet> hoaDonChiTiets;
