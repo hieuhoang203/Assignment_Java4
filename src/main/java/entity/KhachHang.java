@@ -1,6 +1,9 @@
 package entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
@@ -27,25 +30,33 @@ public class KhachHang implements Serializable {
     private UUID id;
 
     @Column(name = "ma")
+    @NotEmpty(message = "Mã không được trống!")
     private String ma;
 
     @Column(name = "ho")
+    @NotEmpty(message = "Họ không được trống!")
     private String ho;
 
     @Column(name = "ten_dem")
+    @NotEmpty(message = "Tên đệm không được trống!")
     private String ten_dem;
 
     @Column(name = "ten")
+    @NotEmpty(message = "Tên không được trống!")
     private String ten;
 
     @Column(name = "ngay_sinh")
     @Temporal(TemporalType.DATE)
+    @NotNull(message = "Chưa có ngày sinh!")
     private Date ngay_sinh;
 
     @Column(name = "sdt")
+    @NotNull(message = "Chưa có số điện thoại!")
+    @Pattern(regexp = "^(0|\\\\+84)(\\\\s|\\\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\\\d)(\\\\s|\\\\.)?(\\\\d{3})(\\\\s|\\\\.)?(\\\\d{3})$", message = "Số điện thoại không đúng định dạng!")
     private String sdt;
 
     @Column(name = "dia_chi")
+    @NotEmpty(message = "Chưa có địa chỉ!")
     private String dia_chi;
 
     @Column(name = "thanh_pho")
@@ -55,6 +66,7 @@ public class KhachHang implements Serializable {
     private String quoc_gia;
 
     @Column(name = "mat_khau")
+    @NotEmpty(message = "Chưa có mật khẩu!")
     private String mat_khau;
 
     @OneToMany(mappedBy = "id_khachHang", fetch = FetchType.LAZY)
